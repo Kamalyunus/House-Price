@@ -1,0 +1,91 @@
+---
+title: "Kaggle: House Price Project"
+author: "Yunus Kamal"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    highlight: kate
+    gallery: true
+    lightbox: true
+---
+
+
+```{r knitr_init, echo=FALSE, cache=FALSE}
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="200", width = "400")
+```
+
+
+##Importing Data and Initializing Libraries
+
+###Loading Libraries
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(DT)
+source("EDA Functions.R")
+```
+
+###Loading Datasets
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+test<-read_csv("Data/test.csv")
+train<-read_csv("Data/train.csv")
+
+datatable(train)
+```
+
+##Exploratory Data Analysis: Numeric
+
+###Checking Variables Data Type
+```{r}
+data_type<-as.data.frame(sapply(train,function(x) class(x)))
+colnames(data_type)<- c("Data Type")
+
+datatable(data_type)
+```
+
+###Changing Data type as per Documention
+```{r, message=FALSE, warning=FALSE}
+attach(train)
+change_chr<-c("MSSubClass","OverallCond","OverallQual")
+
+train[,change_chr] = apply(train[,change_chr],2,function(x) as.character(x))
+
+str(train[,change_chr])
+
+```
+
+###Numeric Columns Summary 
+```{r}
+EDA_num_Summary<-Summary_num(train)
+datatable(EDA_num_Summary,options = list(autoWidth = TRUE))
+```
+
+###Number of Numeric & Character Data
+```{r}
+Count_Type(train)
+```
+
+
+###Numeric Column Density Plots
+```{r, message=FALSE, warning=FALSE}
+Univariate_num(train,outlier_flag = 1)
+```
+
+###Numeric Column Bivariate Analysis
+```{r, message=FALSE, warning=FALSE}
+Bivariate_num(train,dep="SalePrice",outlier_flag = 1)
+```
+
+##Exploratory Data Analysis: Character
+
+###Character Columns Summary
+```{r, message=FALSE, warning=FALSE}
+EDA_char_Summary<-Summary_char(train)
+datatable(EDA_char_Summary,options = list(autoWidth = TRUE))
+```
+
