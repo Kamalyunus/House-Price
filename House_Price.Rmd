@@ -88,4 +88,8 @@ Bivariate_num(train,dep="SalePrice",outlier_flag = 1)
 EDA_char_Summary<-Summary_char(train)
 datatable(EDA_char_Summary,options = list(autoWidth = TRUE))
 ```
+###Character Columns Bivariate
+```{r, message=FALSE, warning=FALSE}
+Bivariate_char(train,dep='SalePrice', outlier_flag = 1)
+```
 

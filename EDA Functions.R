@@ -114,7 +114,7 @@ Univariate_num<-function(df, outlier_flag) {
 
 #Bivariate_num functions takes dependent variable and plot scatter plots (dependent variable: numeric) or Box plots (dependent variable: Character)
 Bivariate_num<-function(df, dep, outlier_flag) {
-  df=train
+  
   #Search Numeric/Integer columns
   num<- vector(mode = "character")
   for (var in 1:ncol(df)) {
@@ -214,6 +214,77 @@ Summary_char <- function(df){
     colnames(m4)[ncol(m4)] <- "Top5Levels:Count"
     
     return(m4)
+  }
+}
+
+
+#Bivariate_char functions takes dependent variable and plot boxplots (dependent variable: numeric) or Confusion Matrix (dependent variable: Character)
+Bivariate_char<-function(df, dep, outlier_flag) {
+
+  #Search Character/Factor columns
+  char<- vector(mode = "character")
+  for (var in 1:ncol(df)) {
+    if (class(df[[var]]) == "factor" || class(df[[var]]) == "character") {
+      char <- c(char,names(df[var]))
+    }
+  }
+  
+  dfnum     <- subset(df,select=char)
+  D         <- sapply(dfnum, function(x) as.character(x,na.rm=TRUE))
+  DD        <- as.data.frame(D)
+  
+  if(class(df[[dep]])=="numeric" || class(df[[dep]])=="integer") {
+    iqr          <- IQR(df[[dep]],na.rm = TRUE,type = 4)
+    lowerbound   <- quantile(df[[dep]],0.25,na.rm=TRUE)-(1.5*iqr)
+    upperbound   <- quantile(df[[dep]],0.75,na.rm=TRUE)+(1.5*iqr)
+  }
+  
+  #Plots
+  for (var in 1:ncol(DD)) {
+    if (outlier_flag==1) {
+
+        if(names(DD[var])!=dep) {
+          if(class(df[[dep]])=="numeric" || class(df[[dep]])=="integer") {
+            X            <- cbind(df[dep],DD[,var])
+            X            <- X%>%filter(X[,1] < upperbound & X[,1] >lowerbound)
+            colnames(X) <- c(dep,names(DD[var]))
+            Plots<-ggplot(X, aes(X[,2],X[,1])) +      
+              geom_boxplot(outlier.colour = "red") +      
+              ylab(dep) + xlab(names(X[2])) + ggtitle(paste("Bivariate(Outlier Removed):",dep, "Vs.",names(X[2])))
+            print(Plots)
+          } else {
+            #No Outlier Treatment if both independent and dependent variables are characters 
+            confusion = as.data.frame(table(df[[dep]],DD[,var]))
+            names(confusion) = c(names(df[dep]),names(DD[var]),"Freq")
+            Plots <- ggplot(confusion) +
+              geom_tile(aes(confusion[,1], confusion[,2], fill=Freq),color="blue",size=0.1) +
+              xlab(dep) + ylab(names(DD[var])) + ggtitle(paste("Confusion Matrix:",dep, "Vs.",names(DD[var]))) +
+              geom_text(aes(confusion[,1], confusion[,2], label=Freq), size=4, colour="black") +
+              scale_fill_gradient(low="white",high="orange")
+            print(Plots)
+          }
+        }
+    } else{
+      if(names(DD[var])!=dep) {
+        if(class(df[[dep]])=="numeric" || class(df[[dep]])=="integer") {
+          Plots<-ggplot(DD, aes(DD[,var],df[[dep]])) +      
+            geom_boxplot(outlier.colour = "red") +      
+            ylab(dep) + xlab(names(DD[var])) + ggtitle(paste("Bivariate:",dep, "Vs.",names(DD[var]),"(Outliers shown in Red)"))
+          print(Plots)
+        } else {
+          confusion = as.data.frame(table(df[[dep]],DD[,var]))
+          names(confusion) = c(names(df[dep]),names(DD[var]),"Freq")
+          Plots <- ggplot(confusion) +
+            geom_tile(aes(confusion[,1], confusion[,2], fill=Freq),color="blue",size=0.1) +
+            xlab(dep) + ylab(names(DD[var])) + ggtitle(paste("Confusion Matrix:",dep, "Vs.",names(DD[var]))) +
+            geom_text(aes(confusion[,1], confusion[,2], label=Freq), size=4, colour="black") +
+            scale_fill_gradient(low="white",high="orange")
+          print(Plots)
+        }
+      }
+      
+    }
+    
   }
 }
 
