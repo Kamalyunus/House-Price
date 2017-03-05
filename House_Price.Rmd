@@ -105,7 +105,7 @@ corrplot(M, method="square", col=col(200),
          type="full", order="hclust", addrect = 5,
          #addCoef.col = "black", # Add coefficient of correlation
          tl.col="blue", #Text label color and rotation,
-         tl.cex = 0.9,
+         tl.cex = 0.7,
          # Combine with significance
          p.mat = p.mat, sig.level = 0.05, insig="blank"
          )
