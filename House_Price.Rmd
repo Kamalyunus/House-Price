@@ -27,6 +27,7 @@ library(dplyr)
 library(ggplot2)
 library(readr)
 library(DT)
+library(corrplot)
 source("EDA Functions.R")
 ```
 
@@ -92,5 +93,22 @@ datatable(EDA_char_Summary,options = list(autoWidth = TRUE))
 ###Character Columns Bivariate
 ```{r, message=FALSE, warning=FALSE}
 Bivariate_char(train,dep='SalePrice', outlier_flag = 1)
+```
+
+##Exploratory Data Analysis: Correlation Plots
+```{r, message=FALSE, warning=FALSE}
+num_var<-DF_Type(train,type='num')
+p.mat <- cor.mtest(num_var)
+M<-cor(num_var,use="na.or.complete")
+col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
+corrplot(M, method="square", col=col(200),  
+         type="full", order="hclust", addrect = 5,
+         #addCoef.col = "black", # Add coefficient of correlation
+         tl.col="blue", #Text label color and rotation,
+         tl.cex = 0.9,
+         # Combine with significance
+         p.mat = p.mat, sig.level = 0.05, insig="blank"
+         )
+
 ```
 
