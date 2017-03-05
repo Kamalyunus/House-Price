@@ -288,4 +288,25 @@ Bivariate_char<-function(df, dep, outlier_flag) {
   }
 }
 
+#The DF_Type function returns data frame with all numeric or character variables depending on user choice
+DF_Type<-function(df,type){
+  num        <- vector(mode = "character")
+  char       <- vector(mode = "character")
+  for (var in 1:ncol(df)) {
+    if (class(df[[var]]) == "numeric" || class(df[[var]])=="integer") {
+      num    <- c(num, names(df[var]))
+    }else if (class(df[[var]]) == "factor" || class(df[[var]]) == "character") {
+      char   <- c(char, names(df[var]))
+    }
+  }
+  if (type=="char"){
+    dfnum     <- subset(df,select=char)
+    return(dfnum)
+  } else {
+    dfnum     <- subset(df,select=num)
+    return(dfnum)
+  }
+  
+}
+  
 
